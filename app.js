@@ -16,6 +16,11 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
   console.log('socket.io connected')
   serialManager = new SerialManager(socket)
+  serialManager.watch()
+  socket.on('disconnect', () => {
+    console.log('socket.io disconnected')
+    serialManager.unwatch()
+  })
 })
 
 http.listen(4000, function () {
