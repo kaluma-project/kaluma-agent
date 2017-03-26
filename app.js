@@ -19,6 +19,7 @@ io.on('connection', function (socket) {
   serialManager.watch()
   socket.on('disconnect', () => {
     console.log('socket.io disconnected')
+    serialManager.close()
     serialManager.unwatch()
   })
 })
