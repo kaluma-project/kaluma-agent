@@ -6,7 +6,8 @@ module.exports = {
     "promise"
   ],
   "rules": {
-    "indent": ["error", 2]
+    "indent": ["error", 2],
+    "no-eval": 0
   },
   "parserOptions": {
     "ecmaFeatures": {
@@ -14,5 +15,5 @@ module.exports = {
     }
   },
   "globals": {
-  }
+  },
 };
