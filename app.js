@@ -1,6 +1,7 @@
 const app = require('express')()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const config = require('./config')
 // const path = require('path')
 
 const SerialManager = require('./lib/serial-manager')
