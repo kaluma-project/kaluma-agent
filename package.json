@@ -6,9 +6,12 @@
   "engines": {
     "node": "6.9.4"
   },
+  "main": "./app.js",
   "scripts": {
     "start": "electron ./app",
-    "install": "electron-rebuild"
+    "install": "electron-rebuild",
+    "dist": "electron-builder --publish=never",
+    "release": "electron-builder"
   },
   "dependencies": {
     "express": "^4.14.0",
@@ -17,10 +20,34 @@
   },
   "devDependencies": {
     "electron": "^4.1.0",
+    "electron-builder": "^20.39.0",
     "electron-rebuild": "^1.8.4",
     "eslint": "^3.13.1",
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.3.0",
     "eslint-plugin-standard": "^2.0.1"
+  },
+  "build": {
+    "appId": "io.kameleon.kameleon-agent",
+    "productName": "Kameleon Agent",
+    "copyright": "Copyright© MKLabs Co.,Ltd.",
+    "electronCompile": false,
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "perMachine": true
+    }
   }
 }

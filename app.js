@@ -1,8 +1,8 @@
 const app = require('express')()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
-const config = require('./config')
-// const path = require('path')
+// const config = require('./config')
+const path = require('path')
 const electron = require('electron')
 const electronApp = electron.app
 const {Menu, Tray} = electron
@@ -58,8 +58,13 @@ function closeAgent () {
   electronApp.quit()
 }
 
+// Run on startup
+electronApp.setLoginItemSettings({
+  openAtLogin: electronApp.isPackaged
+})
+
 electronApp.on('ready', () => {
-  tray = new Tray('res/images/kameleonTemplate.png')
+  tray = new Tray(path.join(__dirname, 'res/images/kameleonTemplate.png'))
   contextMenu = Menu.buildFromTemplate([
     { id: 'start', label: 'Start Agent', click: startAgent },
     { id: 'stop', label: 'Stop Agent', click: stopAgent },
