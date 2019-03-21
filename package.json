@@ -1,11 +1,14 @@
 {
   "name": "kameleon-agent",
   "version": "0.1.0",
-  "private": true,
   "author": "Minkyu Lee",
   "engines": {
-    "node": "6.9.4"
+    "node": "8.11.3"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kameleon-project/kameleon-agent.git"
+  },  
   "main": "./app.js",
   "scripts": {
     "start": "electron ./app",
@@ -49,5 +52,10 @@
     "nsis": {
       "perMachine": true
     }
+  },
+  "publish": {
+    "provider": "github",
+    "repo": "kameleon-agent",
+    "owner": "kameleon-project"
   }
 }
