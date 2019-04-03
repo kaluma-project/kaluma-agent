@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kameleon-project/kameleon-agent.git"
-  },  
+  },
   "main": "./app.js",
   "scripts": {
     "start": "electron ./app",
@@ -19,7 +19,7 @@
   "dependencies": {
     "http-shutdown": "^1.2.0",
     "serialport": "^7.1.4",
-    "socket.io": "^1.7.2"
+    "socket.io": "^2.2.0"
   },
   "devDependencies": {
     "electron": "^4.1.0",
