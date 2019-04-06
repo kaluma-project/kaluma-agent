@@ -47,6 +47,13 @@ Send data to the serial port.
 * __`port`__ : `{string}`
 * __`data`__ : `{string}`
 
+### Command: 'upload'
+
+Upload code to the serial port.
+
+* __`port`__ : `{string}`
+* __`code`__ : `{string}`
+
 ### Event: 'connect'
 
 Triggered when successfully connected to Agent via socket.io. (This is socket.io's original event)
