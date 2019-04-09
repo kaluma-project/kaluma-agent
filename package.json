@@ -12,9 +12,9 @@
   "main": "./app.js",
   "scripts": {
     "start": "electron ./app",
-    "install": "electron-rebuild",
     "dist": "electron-builder --publish=never",
-    "release": "electron-builder"
+    "release": "electron-builder",
+    "postinstall": "npx electron-rebuild -f -w serialport"
   },
   "dependencies": {
     "http-shutdown": "^1.2.0",
@@ -23,7 +23,7 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
-    "electron": "3.1.8",
+    "electron": "4.0.3",
     "electron-builder": "^20.38.5",
     "electron-rebuild": "^1.8.4",
     "eslint": "^5.16.0",
@@ -38,6 +38,7 @@
     "productName": "Kameleon Agent",
     "copyright": "Copyright© MKLabs Co.,Ltd.",
     "electronCompile": false,
+    "npmRebuild": false,
     "mac": {
       "category": "public.app-category.developer-tools"
     },
