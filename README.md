@@ -70,17 +70,17 @@ Triggered when error during try to connect (This is socket.io's original event)
 
 Trigger when new devices are found.
 
-* Returns: `{Array<Device>}`
+* __`devices`__ : `{Array<Device>}`
 
 ### Event: 'serial:lost'
 
 Trigger when some devices are lost.
 
-* Returns: `{Array<Device>}`
+* __`devices`__ : `{Array<Device>}`
 
 ### Event: 'serial:open'
 
-* Returns: `{string}` Closed port name.
+* __`comName`__ : `{string}`
 
 Triggered when the serial port is open.
 
@@ -88,16 +88,24 @@ Triggered when the serial port is open.
 
 Triggered when the serial port is closed.
 
-* Returns: `{string}` Closed port name.
+* __`comName`__ : `{string}`
 
 ### Event: 'serial:data'
 
 Triggered when data is received from the serial port.
 
-* Returns: `{string}` Received data.
+* __`comName`__ : `{string}`
+* __`data`__ : `{string}` Received data.
+
+### Event: `serial:upload`
+
+Triggered when code upload is completed.
+
+* __`comName`__ : `{string}`
 
 ### Event: 'serial:error'
 
 Triggered when error is occurred.
 
-* Returns: `{string}` Error object.
+* __`comName`__ : `{string}`
+* __`error`__ : `{string}` Error message.
