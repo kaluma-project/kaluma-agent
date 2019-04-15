@@ -1,4 +1,5 @@
-const {app} = require('electron')
+const { app } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const Agent = require('./lib/agent')
 const AgentTray = require('./lib/tray')
 
@@ -17,3 +18,5 @@ app.on('ready', () => {
   tray.setup()
   agent.start()
 })
+
+autoUpdater.checkForUpdatesAndNotify()
