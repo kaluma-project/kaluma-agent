@@ -4,8 +4,10 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
 
 ## Table of Contents
 
+* [Overview](#overview)
 * [Communication Protocol](#communication-protocol)
   * [Commands](#commands)
+    * [cmd:scan](#cmdscan)
     * [cmd:list](#cmdlist)
     * [cmd:open](#cmdopen)
     * [cmd:close](#cmdclose)
@@ -22,23 +24,54 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [event:error](#eventerror)
 * [Device Object](#device-object)
 
+## Overview
+
+Main features of Kameleon Agent are:
+
+* Detects only Kameleon-compatible devices.
+* Periodically scan available devices. (default 3 seconds)
+* Allow to manage multiple opened devices.
+
 ## Communication Protocol
 
 It provides socket.io based protocol and the socket port is `54094`.
 
+Before to send command or listen to events, you need to establish a connection to the agent via socket.io protocol.
+
+```js
+const io = require('socket.io-client')
+
+var socket_client = io('http://localhost:54094')
+
+socket_client.on('connect', () => { /* ... */ })
+socket_client.on('disconnect', () => { /* ... */ })
+```
+
 ### Commands
 
 Here are some commands which can be sent to Kameleon Agent.
+
+#### cmd:scan
+
+Request to scan available devices instantly. Typically this command is not required because scan is periodically performed. If some devices are found or lost, `event:found`, `event:lost` will be triggered.
+
+```js
+socket_client.emit('cmd:scan')
+socket_client.on('event:found', devices => { /* ... */ })
+socket_client.on('event:lost', devices => { /* ... */ })
+```
 
 #### cmd:list
 
 * `callback`: `<Function>`
   * `devices` : `<Array.<DeviceObject>>`
 
-Request a list of available devices connected via serial ports.
+Request a list of available devices (ready to open -- _already plugged to USB or discovered wirelessly_) connected via serial ports.
+
+> __Note:__ This command is not a serial scan action. It returns only available devices to be open.
 
 ```js
-socket_io_client.emit('cmd:list', (deviceObjects) => {
+socket_client.emit('cmd:list', (deviceObjects) => {
   console.log(deviceObjects)
 })
 ```
@@ -48,16 +81,15 @@ socket_io_client.emit('cmd:list', (deviceObjects) => {
 * `comName` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
-  * `device`: `<DeviceObject>`
 
 Request to open the specified serial port.
 
 ```js
-socket_io_client.emit('cmd:open', '/dev/tty.usbmodem0001' (err, device) => {
+socket_client.emit('cmd:open', '/dev/tty.usbmodem0001' (err) => {
   if (err) {
     // handle error
   } else {
-    console.log('opened', device)
+    console.log('opened')
   }
 })
 ```
@@ -67,16 +99,15 @@ socket_io_client.emit('cmd:open', '/dev/tty.usbmodem0001' (err, device) => {
 * `comName` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
-  * `device`: `<DeviceObject>`
 
 Request to close the specified serial port.
 
 ```js
-socket_io_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err, device) => {
+socket_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err) => {
   if (err) {
     // handle error
   } else {
-    console.log('closed', device)
+    console.log('closed')
   }
 })
 ```
@@ -91,7 +122,7 @@ socket_io_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err, device) => {
 Send data to the serial port.
 
 ```js
-socket_io_client.emit('cmd:write', '/dev/tty.usbmodem0001', '1+2\r', err => {
+socket_client.emit('cmd:write', '/dev/tty.usbmodem0001', '1+2\r', err => {
   if (err) {
     // handle error
   } else {
@@ -110,11 +141,31 @@ socket_io_client.emit('cmd:write', '/dev/tty.usbmodem0001', '1+2\r', err => {
 Upload code to the serial port.
 
 ```js
-socket_io_client.emit('cmd:upload', '/dev/tty.usbmodem0001', 'console.log("hello,world!")', (err) => {
+socket_client.emit('cmd:upload', '/dev/tty.usbmodem0001', 'console.log("hello,world!")', (err) => {
   if (err) {
     // handle error
   } else {
     console.log('code uploaded.')
+  }
+})
+```
+
+#### cmd:eval
+
+* `comName` : `<string>`
+* `code` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+  * `output`: `<string>`
+
+Evaluate code in the device and then return output.
+
+```js
+socket_client.emit('cmd:eval', '/dev/tty.usbmodem0001', '1+2', (err, output) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log(output)
   }
 })
 ```
@@ -130,7 +181,7 @@ Update firmware.
 
 ```js
 var binary = // ... binary data of firmware
-socket_io_client.emit('cmd:firmware-update', '/dev/tty.usbmodem0001', binary, (err) => {
+socket_client.emit('cmd:firmware-update', '/dev/tty.usbmodem0001', binary, (err) => {
   if (err) {
     // handle error
   } else {
@@ -150,7 +201,7 @@ Here are some events from Agent. You can also use events from original socket.io
 Trigger when new devices are found.
 
 ```js
-socket_io_client.on('event:found', (devices) => {
+socket_client.on('event:found', (devices) => {
   console.log(devices)
 })
 ```
@@ -162,7 +213,7 @@ socket_io_client.on('event:found', (devices) => {
 Trigger when some devices are lost.
 
 ```js
-socket_io_client.on('event:lost', (devices) => {
+socket_client.on('event:lost', (devices) => {
   console.log(devices)
 })
 ```
@@ -174,7 +225,7 @@ socket_io_client.on('event:lost', (devices) => {
 Triggered when the serial port is open.
 
 ```js
-socket_io_client.on('event:open', (comName) => {
+socket_client.on('event:open', (comName) => {
   console.log(comName)
 })
 ```
@@ -186,7 +237,7 @@ socket_io_client.on('event:open', (comName) => {
 Triggered when the serial port is closed.
 
 ```js
-socket_io_client.on('event:close', (comName) => {
+socket_client.on('event:close', (comName) => {
   console.log(comName)
 })
 ```
@@ -199,7 +250,7 @@ socket_io_client.on('event:close', (comName) => {
 Triggered when data is received from the serial port.
 
 ```js
-socket_io_client.on('event:data', (comName, data) => {
+socket_client.on('event:data', (comName, data) => {
   console.log(comName, data)
 })
 ```
@@ -212,7 +263,7 @@ socket_io_client.on('event:data', (comName, data) => {
 Triggered when error is occurred.
 
 ```js
-socket_io_client.on('event:data', (comName, err) => {
+socket_client.on('event:data', (comName, err) => {
   console.error(comName, err)
 })
 ```
@@ -230,3 +281,4 @@ Device object is JSON object including device's information:
 * `locationId` : `<string>`
 * `vendorId` : `<string>`
 * `productId` : `<string>`
+* `isOpen`: `<boolean>` -- whether the serial port is opened or not.
