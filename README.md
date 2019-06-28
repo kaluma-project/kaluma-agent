@@ -1,111 +1,232 @@
 # Kameleon Agent
 
-Kameleon Agent provides socket.io based protocol which can be used by external applications (e.g. Web Editor) communicating Kameleon-compatible boards.
+Kameleon Agent is a desktop service application to communicate Kameleon-compatible boards from external applications (e.g. Kameleon Web Editor).
 
-## Socket Protocol
+## Table of Contents
 
-### `Device` object
+* [Communication Protocol](#communication-protocol)
+  * [Commands](#commands)
+    * [cmd:list](#cmdlist)
+    * [cmd:open](#cmdopen)
+    * [cmd:close](#cmdclose)
+    * [cmd:write](#cmdwrite)
+    * [cmd:upload](#cmdupload)
+    * [cmd:eval](#cmdeval)
+    * [cmd:firmware-update](#cmdfirmare-update)
+  * [Events](#events)
+    * [event:found](#eventfound)
+    * [event:lost](#eventlost)
+    * [event:open](#eventopen)
+    * [event:close](#eventclose)
+    * [event:data](#eventdata)
+    * [event:error](#eventerror)
+* [Device Object](#device-object)
 
-* `id` : `{string}`
-* `name` : `{string}`
-* `comName` : `{string}`
-* `manufacturer` : `{string}`
-* `serialNumber` : `{string}`
-* `pnpId` : `{string}`
-* `locationId` : `{string}`
-* `vendorId` : `{string}`
-* `productId` : `{string}`
+## Communication Protocol
 
-### Command: 'list'
+It provides socket.io based protocol and the socket port is `54094`.
+
+### Commands
+
+Here are some commands which can be sent to Kameleon Agent.
+
+#### cmd:list
+
+* `callback`: `<Function>`
+  * `devices` : `<Array.<DeviceObject>>`
 
 Request a list of available devices connected via serial ports.
 
-* Returns: `{Array<Device>}`
+```js
+socket_io_client.emit('cmd:list', (deviceObjects) => {
+  console.log(deviceObjects)
+})
+```
+
+#### cmd:open
+
+* `comName` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+  * `device`: `<DeviceObject>`
+
+Request to open the specified serial port.
 
 ```js
-socket_io_client.emit('list', (devices) => {
+socket_io_client.emit('cmd:open', '/dev/tty.usbmodem0001' (err, device) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log('opened', device)
+  }
+})
+```
+
+#### cmd:close
+
+* `comName` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+  * `device`: `<DeviceObject>`
+
+Request to close the specified serial port.
+
+```js
+socket_io_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err, device) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log('closed', device)
+  }
+})
+```
+
+#### cmd:write
+
+* `comName` : `<string>`
+* `data` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+
+Send data to the serial port.
+
+```js
+socket_io_client.emit('cmd:write', '/dev/tty.usbmodem0001', '1+2\r', err => {
+  if (err) {
+    // handle error
+  } else {
+    console.log('done')
+  }
+})
+```
+
+#### cmd:upload
+
+* `comName` : `<string>`
+* `code` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+
+Upload code to the serial port.
+
+```js
+socket_io_client.emit('cmd:upload', '/dev/tty.usbmodem0001', 'console.log("hello,world!")', (err) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log('code uploaded.')
+  }
+})
+```
+
+#### cmd:firmware-update
+
+* `comName` : `<string>`
+* `binary` : `<ArrayBuffer>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+
+Update firmware.
+
+```js
+var binary = // ... binary data of firmware
+socket_io_client.emit('cmd:firmware-update', '/dev/tty.usbmodem0001', binary, (err) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log('firmware updated.')
+  }
+})
+```
+
+### Events
+
+Here are some events from Agent. You can also use events from original socket.io (e.g. `connect`, `disconnect`, `connect_error`, `connect_timeout`, `error`, ... For more: [Socket.IO Client API](https://socket.io/docs/client-api/)).
+
+#### event:found
+
+* `devices` : `<Array<DeviceObject>>`
+
+Trigger when new devices are found.
+
+```js
+socket_io_client.on('event:found', (devices) => {
   console.log(devices)
 })
 ```
 
-### Command: 'open'
+#### event:lost
 
-Request to open the specified serial port.
-
-* __`port`__ : `{string}`
-
-### Command: 'close'
-
-Request to close the specified serial port.
-
-* __`port`__ : `{string}`
-
-### Command: 'write'
-
-Send data to the serial port.
-
-* __`port`__ : `{string}`
-* __`data`__ : `{string}`
-
-### Command: 'upload'
-
-Upload code to the serial port.
-
-* __`port`__ : `{string}`
-* __`code`__ : `{string}`
-
-### Event: 'connect'
-
-Triggered when successfully connected to Agent via socket.io. (This is socket.io's original event)
-
-### Event: 'disconnect'
-
-Triggered when disconnected from Agent. (This is socket.io's original event)
-
-### Event: 'connect_error'
-
-Triggered when error during try to connect (This is socket.io's original event)
-
-### Event: 'serial:found'
-
-Trigger when new devices are found.
-
-* __`devices`__ : `{Array<Device>}`
-
-### Event: 'serial:lost'
+* `devices` : `<Array<DeviceObject>>`
 
 Trigger when some devices are lost.
 
-* __`devices`__ : `{Array<Device>}`
+```js
+socket_io_client.on('event:lost', (devices) => {
+  console.log(devices)
+})
+```
 
-### Event: 'serial:open'
+#### event:open
 
-* __`comName`__ : `{string}`
+* `comName` : `<string>`
 
 Triggered when the serial port is open.
 
-### Event: 'serial:close'
+```js
+socket_io_client.on('event:open', (comName) => {
+  console.log(comName)
+})
+```
+
+#### event:close
+
+* `comName` : `<string>`
 
 Triggered when the serial port is closed.
 
-* __`comName`__ : `{string}`
+```js
+socket_io_client.on('event:close', (comName) => {
+  console.log(comName)
+})
+```
 
-### Event: 'serial:data'
+#### event:data
+
+* `comName` : `<string>`
+* `data` : `<string>` Received data.
 
 Triggered when data is received from the serial port.
 
-* __`comName`__ : `{string}`
-* __`data`__ : `{string}` Received data.
+```js
+socket_io_client.on('event:data', (comName, data) => {
+  console.log(comName, data)
+})
+```
 
-### Event: `serial:upload`
+#### event:error
 
-Triggered when code upload is completed.
-
-* __`comName`__ : `{string}`
-
-### Event: 'serial:error'
+* `comName` : `<string>`
+* `err` : `<string>` Error message.
 
 Triggered when error is occurred.
 
-* __`comName`__ : `{string}`
-* __`error`__ : `{string}` Error message.
+```js
+socket_io_client.on('event:data', (comName, err) => {
+  console.error(comName, err)
+})
+```
+
+## Device Object
+
+Device object is JSON object including device's information:
+
+* `id` : `<string>` -- e.g. "kameleon-core"
+* `name` : `<string>` -- e.g. "Kameleon Core"
+* `comName` : `<string>`
+* `manufacturer` : `<string>`
+* `serialNumber` : `<string>`
+* `pnpId` : `<string>`
+* `locationId` : `<string>`
+* `vendorId` : `<string>`
+* `productId` : `<string>`
