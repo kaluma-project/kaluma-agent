@@ -14,7 +14,8 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [cmd:write](#cmdwrite)
     * [cmd:upload](#cmdupload)
     * [cmd:eval](#cmdeval)
-    * [cmd:firmware-update](#cmdfirmare-update)
+    * [cmd:firmware-update-check](#cmdfirmware-update-check)
+    * [cmd:firmware-update](#cmdfirmware-update)
   * [Events](#events)
     * [event:found](#eventfound)
     * [event:lost](#eventlost)
@@ -22,6 +23,7 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [event:close](#eventclose)
     * [event:data](#eventdata)
     * [event:error](#eventerror)
+    * [event:firmware-updating](#eventfirmware-updating)
 * [Device Object](#device-object)
 
 ## Overview
@@ -64,7 +66,7 @@ socket_client.on('event:lost', devices => { /* ... */ })
 #### cmd:list
 
 * `callback`: `<Function>`
-  * `devices` : `<Array.<DeviceObject>>`
+  * `devices` : `<Array<DeviceObject>>`
 
 Request a list of available devices (ready to open -- _already plugged to USB or discovered wirelessly_) connected via serial ports.
 
@@ -170,24 +172,57 @@ socket_client.emit('cmd:eval', '/dev/tty.usbmodem0001', '1+2', (err, output) => 
 })
 ```
 
+#### cmd:firmware-update-check
+
+* `comName` : `<string>`
+* `callback` : `<Function>`
+  * `err` : `<Error>`
+  * `firmwareInfo` : `<Object>`
+    * `version` : `<string>`
+    * `name` : `<string>`
+    * `size` : `<number>`
+    * `url` : `<string>`
+    * `updated_at` : `<string>`
+
+Check for firmware update.
+
+```js
+socket_client.emit(
+  'cmd:firmware-update-check',
+  '/dev/tty.usbmodem0001',
+  (err) => {
+    if (err) {
+      // handle error
+    } else {
+      console.log('firmware updated.')
+    }
+  }
+)
+```
+
+
 #### cmd:firmware-update
 
 * `comName` : `<string>`
-* `binary` : `<ArrayBuffer>`
+* `url`: `<string>` A url to download firmware binary
 * `callback` : `<Function>`
   * `err` : `<Error>`
 
-Update firmware.
+Download and update firmware. This command will trigger updating status events: [event:firmware-updating](#eventfirmware-updating)
 
 ```js
-var binary = // ... binary data of firmware
-socket_client.emit('cmd:firmware-update', '/dev/tty.usbmodem0001', binary, (err) => {
-  if (err) {
-    // handle error
-  } else {
-    console.log('firmware updated.')
+socket_client.emit(
+  'cmd:firmware-update',
+  '/dev/tty.usbmodem0001',
+  'https://github.com/kameleon-project/kameleon/releases/download/v1.0.0-beta.1/kameleon-core.bin',
+  (err) => {
+    if (err) {
+      // handle error
+    } else {
+      console.log('firmware updated.')
+    }
   }
-})
+)
 ```
 
 ### Events
@@ -268,6 +303,23 @@ socket_client.on('event:data', (comName, err) => {
 })
 ```
 
+#### event:firmware-updating
+
+* `comName` : `<string>`
+* `info` : `<Object>` Firmware updating state info.
+  * `state` : `<string>` One of `'download-start'` | `'download-complete'` | `'update-start'` | `'updating'` | `'complete'`.
+  * `progress` : `<Object>` Indicate progress of firmware update.
+    * `totalBytes` : `<number>` Total size of firmware.
+    * `writtenBytes` : `<number>` Updated size.
+
+Triggered when firmware upating state changes
+
+```js
+socket_client.on('event:firmware-updating', (comName, info) => {
+  console.log(comName, info)
+})
+```
+
 ## Device Object
 
 Device object is JSON object including device's information:
@@ -281,4 +333,3 @@ Device object is JSON object including device's information:
 * `locationId` : `<string>`
 * `vendorId` : `<string>`
 * `productId` : `<string>`
-* `isOpen`: `<boolean>` -- whether the serial port is opened or not.
