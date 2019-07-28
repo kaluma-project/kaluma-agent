@@ -1,8 +1,8 @@
 module.exports = {
   supportedDevices: [
     {
-      vendorId: '0483',
-      productId: '5740',
+      vendorId: '1209',
+      productId: '7600',
       id: 'kameleon-core',
       name: 'Kameleon Core'
     }
