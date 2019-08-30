@@ -7,7 +7,6 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
 * [Overview](#overview)
 * [Communication Protocol](#communication-protocol)
   * [Commands](#commands)
-    * [cmd:scan](#cmdscan)
     * [cmd:list](#cmdlist)
     * [cmd:open](#cmdopen)
     * [cmd:close](#cmdclose)
@@ -21,6 +20,7 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [event:lost](#eventlost)
     * [event:open](#eventopen)
     * [event:close](#eventclose)
+    * [event:close-disconnected](#eventclose-disconnected)    
     * [event:data](#eventdata)
     * [event:error](#eventerror)
     * [event:firmware-updating](#eventfirmware-updating)
@@ -53,24 +53,12 @@ socket_client.on('disconnect', () => { /* ... */ })
 
 Here are some commands which can be sent to Kameleon Agent.
 
-#### cmd:scan
-
-Request to scan available devices instantly. Typically this command is not required because scan is periodically performed. If some devices are found or lost, `event:found`, `event:lost` will be triggered.
-
-```js
-socket_client.emit('cmd:scan')
-socket_client.on('event:found', devices => { /* ... */ })
-socket_client.on('event:lost', devices => { /* ... */ })
-```
-
 #### cmd:list
 
 * `callback`: `<Function>`
   * `devices` : `<Array<DeviceObject>>`
 
 Request a list of available devices (ready to open -- _already plugged to USB or discovered wirelessly_) connected via serial ports.
-
-> __Note:__ This command is not a serial scan action. It returns only available devices to be open.
 
 ```js
 socket_client.emit('cmd:list', (deviceObjects) => {
@@ -229,30 +217,6 @@ socket_client.emit(
 
 Here are some events from Agent. You can also use events from original socket.io (e.g. `connect`, `disconnect`, `connect_error`, `connect_timeout`, `error`, ... For more: [Socket.IO Client API](https://socket.io/docs/client-api/)).
 
-#### event:found
-
-* `devices` : `<Array<DeviceObject>>`
-
-Trigger when new devices are found.
-
-```js
-socket_client.on('event:found', (devices) => {
-  console.log(devices)
-})
-```
-
-#### event:lost
-
-* `devices` : `<Array<DeviceObject>>`
-
-Trigger when some devices are lost.
-
-```js
-socket_client.on('event:lost', (devices) => {
-  console.log(devices)
-})
-```
-
 #### event:open
 
 * `comName` : `<string>`
@@ -273,6 +237,18 @@ Triggered when the serial port is closed.
 
 ```js
 socket_client.on('event:close', (comName) => {
+  console.log(comName)
+})
+```
+
+#### event:close-disconnected
+
+* `comName` : `<string>`
+
+Triggered when the serial port is closed by disconnection (e.g. unplug the device from computer)
+
+```js
+socket_client.on('event:close-disconnected', (comName) => {
   console.log(comName)
 })
 ```
