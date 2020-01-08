@@ -178,11 +178,15 @@ Check for firmware update.
 socket_client.emit(
   'cmd:firmware-update-check',
   '/dev/tty.usbmodem0001',
-  (err) => {
+  (err, firmwareInfo) => {
     if (err) {
       // handle error
     } else {
-      console.log('firmware updated.')
+      if (firmwareInfo) {
+        console.log('Update available')
+      } else {
+        console.log('No update available')
+      }
     }
   }
 )
@@ -309,3 +313,4 @@ Device object is JSON object including device's information:
 * `locationId` : `<string>`
 * `vendorId` : `<string>`
 * `productId` : `<string>`
+* `firmwareVersion` : `<string>` -- e.g. "1.0.0-beta.1"
