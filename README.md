@@ -12,7 +12,6 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [cmd:close](#cmdclose)
     * [cmd:write](#cmdwrite)
     * [cmd:upload](#cmdupload)
-    * [cmd:eval](#cmdeval)
     * [cmd:firmware-update-check](#cmdfirmware-update-check)
     * [cmd:firmware-update](#cmdfirmware-update)
   * [Events](#events)
@@ -140,26 +139,6 @@ socket_client.emit('cmd:upload', '/dev/tty.usbmodem0001', 'console.log("hello,wo
 })
 ```
 
-#### cmd:eval
-
-* `comName` : `<string>`
-* `code` : `<string>`
-* `callback` : `<Function>`
-  * `err` : `<Error>`
-  * `output`: `<string>`
-
-Evaluate code in the device and then return output.
-
-```js
-socket_client.emit('cmd:eval', '/dev/tty.usbmodem0001', '1+2', (err, output) => {
-  if (err) {
-    // handle error
-  } else {
-    console.log(output)
-  }
-})
-```
-
 #### cmd:firmware-update-check
 
 * `comName` : `<string>`
@@ -191,7 +170,6 @@ socket_client.emit(
   }
 )
 ```
-
 
 #### cmd:firmware-update
 
