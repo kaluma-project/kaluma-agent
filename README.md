@@ -55,13 +55,18 @@ Here are some commands which can be sent to Kameleon Agent.
 #### cmd:list
 
 * `callback`: `<Function>`
+  * `err` : `<Error>`
   * `devices` : `<Array<DeviceObject>>`
 
 Request a list of available devices (ready to open -- _already plugged to USB or discovered wirelessly_) connected via serial ports.
 
 ```js
-socket_client.emit('cmd:list', (deviceObjects) => {
-  console.log(deviceObjects)
+socket_client.emit('cmd:list', (err, deviceObjects) => {
+  if (err) {
+    // handle error
+  } else {
+    console.log(deviceObjects)
+  }
 })
 ```
 
