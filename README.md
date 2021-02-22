@@ -68,7 +68,7 @@ socket_client.emit('cmd:list', (err, deviceObjects) => {
 
 #### cmd:open
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
 
@@ -86,7 +86,7 @@ socket_client.emit('cmd:open', '/dev/tty.usbmodem0001' (err) => {
 
 #### cmd:close
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
 
@@ -104,7 +104,7 @@ socket_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err) => {
 
 #### cmd:write
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `data` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
@@ -123,7 +123,7 @@ socket_client.emit('cmd:write', '/dev/tty.usbmodem0001', '1+2\r', err => {
 
 #### cmd:upload
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `code` : `<string>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
@@ -146,63 +146,63 @@ Here are some events from Agent. You can also use events from original socket.io
 
 #### event:open
 
-* `comName` : `<string>`
+* `path` : `<string>`
 
 Triggered when the serial port is open.
 
 ```js
-socket_client.on('event:open', (comName) => {
-  console.log(comName)
+socket_client.on('event:open', (path) => {
+  console.log(path)
 })
 ```
 
 #### event:close
 
-* `comName` : `<string>`
+* `path` : `<string>`
 
 Triggered when the serial port is closed.
 
 ```js
-socket_client.on('event:close', (comName) => {
-  console.log(comName)
+socket_client.on('event:close', (path) => {
+  console.log(path)
 })
 ```
 
 #### event:close-disconnected
 
-* `comName` : `<string>`
+* `path` : `<string>`
 
 Triggered when the serial port is closed by disconnection (e.g. unplug the device from computer)
 
 ```js
-socket_client.on('event:close-disconnected', (comName) => {
-  console.log(comName)
+socket_client.on('event:close-disconnected', (path) => {
+  console.log(path)
 })
 ```
 
 #### event:data
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `data` : `<string>` Received data.
 
 Triggered when data is received from the serial port.
 
 ```js
-socket_client.on('event:data', (comName, data) => {
-  console.log(comName, data)
+socket_client.on('event:data', (path, data) => {
+  console.log(path, data)
 })
 ```
 
 #### event:error
 
-* `comName` : `<string>`
+* `path` : `<string>`
 * `err` : `<string>` Error message.
 
 Triggered when error is occurred.
 
 ```js
-socket_client.on('event:data', (comName, err) => {
-  console.error(comName, err)
+socket_client.on('event:data', (path, err) => {
+  console.error(path, err)
 })
 ```
 
@@ -210,9 +210,7 @@ socket_client.on('event:data', (comName, err) => {
 
 Device object is JSON object including device's information:
 
-* `id` : `<string>` -- e.g. "kameleon-core"
-* `name` : `<string>` -- e.g. "Kameleon Core"
-* `comName` : `<string>`
+* `path` : `<string>`
 * `manufacturer` : `<string>`
 * `serialNumber` : `<string>`
 * `pnpId` : `<string>`
