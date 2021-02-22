@@ -1,6 +1,6 @@
-# Kameleon Agent
+# Kaluma Agent
 
-Kameleon Agent is a desktop service application to communicate Kameleon-compatible boards from external applications (e.g. Kameleon Web Editor).
+Kaluma Agent is a desktop service application to communicate Kaluma-compatible boards from external applications (e.g. Kaluma IDE).
 
 ## Table of Contents
 
@@ -12,8 +12,6 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [cmd:close](#cmdclose)
     * [cmd:write](#cmdwrite)
     * [cmd:upload](#cmdupload)
-    * [cmd:firmware-update-check](#cmdfirmware-update-check)
-    * [cmd:firmware-update](#cmdfirmware-update)
   * [Events](#events)
     * [event:found](#eventfound)
     * [event:lost](#eventlost)
@@ -22,14 +20,12 @@ Kameleon Agent is a desktop service application to communicate Kameleon-compatib
     * [event:close-disconnected](#eventclose-disconnected)    
     * [event:data](#eventdata)
     * [event:error](#eventerror)
-    * [event:firmware-updating](#eventfirmware-updating)
 * [Device Object](#device-object)
 
 ## Overview
 
-Main features of Kameleon Agent are:
+Main features of Kaluma Agent are:
 
-* Detects only Kameleon-compatible devices.
 * Periodically scan available devices. (default 3 seconds)
 * Allow to manage multiple opened devices.
 
@@ -50,7 +46,7 @@ socket_client.on('disconnect', () => { /* ... */ })
 
 ### Commands
 
-Here are some commands which can be sent to Kameleon Agent.
+Here are some commands which can be sent to Kaluma Agent.
 
 #### cmd:list
 
@@ -144,62 +140,6 @@ socket_client.emit('cmd:upload', '/dev/tty.usbmodem0001', 'console.log("hello,wo
 })
 ```
 
-#### cmd:firmware-update-check
-
-* `comName` : `<string>`
-* `callback` : `<Function>`
-  * `err` : `<Error>`
-  * `firmwareInfo` : `<Object>`
-    * `version` : `<string>`
-    * `name` : `<string>`
-    * `size` : `<number>`
-    * `url` : `<string>`
-    * `updated_at` : `<string>`
-
-Check for firmware update.
-
-```js
-socket_client.emit(
-  'cmd:firmware-update-check',
-  '/dev/tty.usbmodem0001',
-  (err, firmwareInfo) => {
-    if (err) {
-      // handle error
-    } else {
-      if (firmwareInfo) {
-        console.log('Update available')
-      } else {
-        console.log('No update available')
-      }
-    }
-  }
-)
-```
-
-#### cmd:firmware-update
-
-* `comName` : `<string>`
-* `url`: `<string>` A url to download firmware binary
-* `callback` : `<Function>`
-  * `err` : `<Error>`
-
-Download and update firmware. This command will trigger updating status events: [event:firmware-updating](#eventfirmware-updating)
-
-```js
-socket_client.emit(
-  'cmd:firmware-update',
-  '/dev/tty.usbmodem0001',
-  'https://github.com/kameleon-project/kameleon/releases/download/v1.0.0-beta.1/kameleon-core.bin',
-  (err) => {
-    if (err) {
-      // handle error
-    } else {
-      console.log('firmware updated.')
-    }
-  }
-)
-```
-
 ### Events
 
 Here are some events from Agent. You can also use events from original socket.io (e.g. `connect`, `disconnect`, `connect_error`, `connect_timeout`, `error`, ... For more: [Socket.IO Client API](https://socket.io/docs/client-api/)).
@@ -266,23 +206,6 @@ socket_client.on('event:data', (comName, err) => {
 })
 ```
 
-#### event:firmware-updating
-
-* `comName` : `<string>`
-* `info` : `<Object>` Firmware updating state info.
-  * `state` : `<string>` One of `'download-start'` | `'download-complete'` | `'update-start'` | `'updating'` | `'complete'`.
-  * `progress` : `<Object>` Indicate progress of firmware update.
-    * `totalBytes` : `<number>` Total size of firmware.
-    * `writtenBytes` : `<number>` Updated size.
-
-Triggered when firmware upating state changes
-
-```js
-socket_client.on('event:firmware-updating', (comName, info) => {
-  console.log(comName, info)
-})
-```
-
 ## Device Object
 
 Device object is JSON object including device's information:
@@ -296,4 +219,3 @@ Device object is JSON object including device's information:
 * `locationId` : `<string>`
 * `vendorId` : `<string>`
 * `productId` : `<string>`
-* `firmwareVersion` : `<string>` -- e.g. "1.0.0-beta.1"

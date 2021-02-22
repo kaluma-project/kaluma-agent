@@ -1,5 +1,5 @@
 {
-  "name": "kameleon-agent",
+  "name": "kaluma-agent",
   "version": "0.8.2",
   "author": "Minkyu Lee",
   "engines": {
@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kameleon-project/kameleon-agent.git"
+    "url": "git+https://github.com/kaluma-project/kaluma-agent.git"
   },
   "main": "./app.js",
   "scripts": {
@@ -17,14 +17,13 @@
     "postinstall": "npx electron-rebuild -f -w serialport"
   },
   "dependencies": {
-    "electron-updater": "^4.0.6",
-    "http-shutdown": "^1.2.0",
-    "kameleon-cli": "^0.9.9",
-    "request": "^2.88.0",
-    "semver": "^6.1.2",
-    "serialport": "^7.1.4",
-    "socket.io": "^2.2.0",
-    "winston": "^3.2.1"
+    "electron-updater": "^4.3.5",
+    "http-shutdown": "^1.2.2",
+    "@kaluma/cli": "^0.9.13",
+    "semver": "^7.3.4",
+    "serialport": "^9.0.6",
+    "socket.io": "^3.1.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "electron": "4.0.3",
@@ -38,8 +37,8 @@
     "eslint-plugin-standard": "^4.0.0"
   },
   "build": {
-    "appId": "io.kameleon.kameleon-agent",
-    "productName": "Kameleon Agent",
+    "appId": "io.kaluma.kaluma-agent",
+    "productName": "Kaluma Agent",
     "copyright": "Copyright© MKLabs Co.,Ltd.",
     "electronCompile": false,
     "npmRebuild": false,
@@ -63,7 +62,7 @@
   },
   "publish": {
     "provider": "github",
-    "repo": "kameleon-agent",
-    "owner": "kameleon-project"
+    "repo": "kaluma-agent",
+    "owner": "kaluma-project"
   }
 }
