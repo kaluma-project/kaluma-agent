@@ -1,6 +1,6 @@
 {
   "name": "kaluma-agent",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "author": "Minkyu Lee",
   "engines": {
     "node": "10.15.3"
