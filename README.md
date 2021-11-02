@@ -1,5 +1,3 @@
-> __Kaluma IDE replaced Kaluma Agent by Web Serial API, so it is no more used and maintained.__
-
 # Kaluma Agent
 
 Kaluma Agent is a desktop service application to communicate Kaluma-compatible boards from external applications (e.g. Kaluma IDE).
