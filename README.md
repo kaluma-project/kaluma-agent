@@ -105,7 +105,7 @@ socket_client.emit('cmd:close', '/dev/tty.usbmodem0001' (err) => {
 #### cmd:write
 
 * `path` : `<string>`
-* `data` : `<string>`
+* `data` : `<string|Uint8Array>`
 * `callback` : `<Function>`
   * `err` : `<Error>`
 
